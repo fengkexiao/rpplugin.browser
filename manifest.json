@@ -1,0 +1,43 @@
+{
+  "manifest_version": 2,
+  "name": "桃子远程医疗助手",
+  "version": "1.2.0",
+  "description": "桃子远程医疗助手",
+  "icons": {
+    "16": "assets/icon.png",
+    "48": "assets/icon.png",
+    "128": "assets/icon.png"
+  },
+  "permissions": [
+    "storage",
+    "webRequest",
+    "https://peachlogin-cs.jk.100cbc.com/*",
+    "https://rpplugin-cs.jk.100cbc.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://mms.pinduoduo.com/*","https://health.meituan.com/*"],
+      "js": ["content/content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "scripts": ["background/background.js"]
+  },
+  "browser_action": {
+    "default_title": "桃子远程医疗助手"
+  },
+  "web_accessible_resources": [
+    "assets/login-logo.png",
+    "assets/login-phone.png",
+    "assets/login-account.png",
+    "assets/login-pwd.png",
+    "assets/headImg.png",
+    "assets/robot.png",
+    "assets/deque.png",
+    "assets/forbidden.png",
+    "assets/safety.png"
+  ],
+  "content_security_policy": "style-src 'self' 'unsafe-eval';script-src 'self' https://peachlogin-cs.jk.100cbc.com https://rpplugin-cs.jk.100cbc.com 'unsafe-eval'; object-src 'self';connect-src 'self' https://peachlogin-cs.jk.100cbc.com https://rpplugin-cs.jk.100cbc.com; "
+  // "content_security_policy": "style-src 'self' 'unsafe-eval'; object-src 'self';"
+}

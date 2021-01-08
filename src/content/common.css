@@ -1,0 +1,19 @@
+.plugin-error__message {
+  background-color: #fef0f0 !important;
+  border-color: #fde2e2 !important;
+  min-width: 380px !important;
+}
+
+.plugin-error__message .el-message__content {
+  color: #f56c6c !important;
+}
+
+.plugin-warning__message {
+  background-color: #fdf6ec !important;
+  border-color: #faecd8 !important;
+  min-width: 380px !important;
+}
+
+.plugin-warning__message .el-message__content {
+  color: #e6a23c !important;
+}
