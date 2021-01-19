@@ -62,6 +62,8 @@ window.addEventListener('DOMContentLoaded', async () => {
         isCover: false,
         leaveModel: false,
         timer: "",
+        timerIllDesc: "",
+        oldDiagnosisList: [],
         timerTaozi: "",
         taoziState: false,
         timerTakeDirection: "",
@@ -123,10 +125,14 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (e.target.className === 'error-div' || e.target.className === 'el-message el-message--error plugin-error__message') {
             return false;
           }
-          if (e.target.className === 'v-modal') {
+          if (e.target.className === 'v-modal' || e.target.className === "v-modal v-modal-enter") {
             this.isCover = false
+            clearTimeout(this.timerIllDesc)
+            this.timerIllDesc = setTimeout(()=> {
+              this.setIllDesc()
+            },100) 
           }
-          if (e.target.className === 'el-tag el-tag--info el-tag--mini' || e.target.className === 'el-tag el-tag--info el-tag--mini v-move' || e.target.className === 'v-modal') {
+          if (e.target.className === 'el-tag el-tag--info el-tag--mini' || e.target.className === 'el-tag el-tag--info el-tag--mini v-move' || e.target.className === 'v-modal' || e.target.className === "v-modal v-modal-enter") {
             let list = this.getDiagnosisList()
             clearTimeout(this.timer)
             if (list.length <= 0) {
@@ -180,6 +186,15 @@ window.addEventListener('DOMContentLoaded', async () => {
           }
           return diagnosisList
         },
+        async setIllDesc() {
+          // 自动填写主述
+          let illDesc = document.querySelector('[for="appeal"]').nextSibling.firstChild.children[0]
+          illDesc.value = this.dataInfoDetail.patientInfo.illDesc?this.dataInfoDetail.patientInfo.illDesc: ""
+          var illDescEvent = document.createEvent('HTMLEvents');
+          illDescEvent.initEvent("input", true, true);
+          illDescEvent.eventType = 'message';
+          illDesc.dispatchEvent(illDescEvent)
+        },
         // 获取用法用量
         async getDosageSearch () {
           let _this = this
@@ -207,10 +222,11 @@ window.addEventListener('DOMContentLoaded', async () => {
                   if (dosageChildNodes[i].nodeName === 'DIV') {
                     let dosageInput = dosageChildNodes[i].querySelector('input')
                     if (res.data) {
-                      if (!this.isCover) {
+                      if (!this.isCover || (JSON.stringify(diagnosisList.sort()) !== JSON.stringify(this.oldDiagnosisList.sort())) ) {
                         this.removeErrorText()
                         dosageInput.value = res.data.dosage
                         this.isCover = true
+                        this.oldDiagnosisList = diagnosisList
                         var event = document.createEvent('HTMLEvents');
                         event.initEvent("input", true, true);
                         event.eventType = 'message';
@@ -218,6 +234,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                       }
                     } else {
                       this.isCover = false
+                      this.oldDiagnosisList = []
                       this.removeErrorText()
                       let div = document.createElement("div");
                       div.className = 'error-div';
@@ -391,6 +408,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           document.addEventListener("DOMNodeInserted", this.handleMT, false);
           document.addEventListener("DOMNodeRemoved", (e) => {
             if (e.target.className === "boo-tag boo-tag-checked") {
+              this.leaveModel = false
               setTimeout(() => {
                 this.searchInfo.primaryDiagnosis = this.getDiagnosisListMT().join(",") || ""
               },200)
@@ -409,6 +427,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             return false;
           }
           if (e.target.className === 'boo-tag boo-tag-checked') {
+            this.leaveModel = true
             clearTimeout(this.timer)
             this.timer = setTimeout(()=> {
               this.getMedicineInfoMT()
@@ -561,9 +580,11 @@ window.addEventListener('DOMContentLoaded', async () => {
             let formType = ele.children[0].children[0].children[1].children[2].children[1].children[1].children[0].children[0].value
             let medicationDays = ele.children[0].children[0].children[1].children[3].children[1].children[0].children[1].children[0].value
             let medicineAmount = ele.children[0].children[0].children[1].children[4].children[1].children[0].children[1].children[0].value
+            let index = fullName.lastIndexOf(specification)
+            let specifications = index > 0 ? fullName.substring(index, fullName.length): specification
             let obj = {
               fullName: fullName,
-              specification: specification,
+              specification: specifications,
               medicineAmount: medicineAmount,                 
               formType: formType,
               takeDose: takeDose,

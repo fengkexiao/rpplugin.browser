@@ -59,7 +59,7 @@ export default {
   },
   watch: {
     leaveModel(val) {
-      if(!val && this.originStatus === 1) {
+      if(!val) {
         this.medicineResult = []
         this.validateResults = []
       }
@@ -84,24 +84,26 @@ export default {
     },
     searchInfo:{
       handler(val,oldVal) {
-        let state = true
-        if(this.searchInfo.medicineList.length > 0) {
-          this.searchInfo.medicineList.forEach(ele => {
-            if(ele.fullName === "" || ele.medicineAmount === "" || ele.formType === "" || ele.takeDose === "" || ele.takeFrequence === "" || ele.takeFrequence.length < 4 || ele.takeDirection === "" || ele.medicationDays === "") {
-              state = false
-            }
-          })
-        }else {
-          state = false
-        }
-        if((this.searchInfo.dosage && this.searchInfo.fullName && this.searchInfo.medicineAmount) || this.searchInfo.primaryDiagnosis && state) {
-          clearTimeout(this.timer)
+        clearTimeout(this.timer)
           this.timer = setTimeout(()=> {
+          let state = true
+          if(this.searchInfo.medicineList.length > 0) {
+            for(let i = 0 ; i < this.searchInfo.medicineList.length ; i++) {
+              let ele = this.searchInfo.medicineList[i]
+              if(ele.fullName === "" || ele.medicineAmount === "" || ele.formType === "" || ele.takeDose === "" || ele.takeFrequence === "" || ele.takeFrequence.length < 4 || ele.takeDirection === "" || ele.medicationDays === "") {
+                state = false
+                break;
+              }
+            }
+          }else {
+            state = false
+          }
+          if((this.searchInfo.dosage && this.searchInfo.fullName && this.searchInfo.medicineAmount) || (this.searchInfo.primaryDiagnosis && state)) {
             this.dataInfo = this.dataInfoDetail
             this.rationalMedicineCheck(this.dataInfoDetail,"")
             this.rationalMedicineFlushInfo(this.dataInfoDetail)
-          },200)
-        }
+          }
+        },200)
       },
       deep: true
     }
@@ -196,7 +198,7 @@ export default {
           sicknessDetail: this.searchInfo.sicknessDetail?this.searchInfo.sicknessDetail:data.patientInfo.sicknessDetail,
           liver: data.patientInfo.liver,
           renal: data.patientInfo.renal,
-          pregnancy: data.patientInfo.pregnancy,
+          pregnancy: data.patientInfo.pregnancy == "备孕"?1:(data.patientInfo.pregnancy == "怀孕"?2:(data.patientInfo.pregnancy == "哺乳期"?3:'')),
           primaryDiagnosis: this.searchInfo.primaryDiagnosis,
         }
       }

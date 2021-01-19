@@ -4,7 +4,7 @@ let loginUrl = ''
 let apiUrl = ''
 
 // 环境
-const nodeEnv = 1
+const nodeEnv = 2
 if (nodeEnv === 0) {
     loginUrl = 'http://10.0.0.212:6108'
     apiUrl = 'http://10.0.0.212:6114'

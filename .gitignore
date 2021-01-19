@@ -2,3 +2,5 @@ node_modules
 indexeddb_test.html
 src/notes
 dist/
+*.zip
+*.rar
